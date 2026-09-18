@@ -26,6 +26,27 @@ export type Database = {
         }
         Relationships: []
       }
+      alarm_sends: {
+        Row: {
+          day: string
+          id: string
+          sent_at: string
+          user_id: string
+        }
+        Insert: {
+          day: string
+          id?: string
+          sent_at?: string
+          user_id: string
+        }
+        Update: {
+          day?: string
+          id?: string
+          sent_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       app_settings: {
         Row: {
           arrival_time: string
@@ -73,6 +94,7 @@ export type Database = {
       }
       assignments: {
         Row: {
+          alarm_at: string | null
           arrival_at: string | null
           candidates: number
           created_at: string
@@ -92,6 +114,7 @@ export type Database = {
           trip_cost: number | null
         }
         Insert: {
+          alarm_at?: string | null
           arrival_at?: string | null
           candidates?: number
           created_at?: string
@@ -111,6 +134,7 @@ export type Database = {
           trip_cost?: number | null
         }
         Update: {
+          alarm_at?: string | null
           arrival_at?: string | null
           candidates?: number
           created_at?: string
