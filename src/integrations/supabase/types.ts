@@ -14,16 +14,372 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      admin_emails: {
+        Row: {
+          email: string
+        }
+        Insert: {
+          email: string
+        }
+        Update: {
+          email?: string
+        }
+        Relationships: []
+      }
+      alarm_sends: {
+        Row: {
+          day: string
+          id: string
+          sent_at: string
+          user_id: string
+        }
+        Insert: {
+          day: string
+          id?: string
+          sent_at?: string
+          user_id: string
+        }
+        Update: {
+          day?: string
+          id?: string
+          sent_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      app_settings: {
+        Row: {
+          arrival_time: string
+          default_departure_address: string
+          default_departure_lat: number | null
+          default_departure_lng: number | null
+          default_departure_name: string
+          destination_address: string
+          destination_lat: number | null
+          destination_lng: number | null
+          destination_name: string
+          id: boolean
+          one_way_km: number
+          updated_at: string
+        }
+        Insert: {
+          arrival_time?: string
+          default_departure_address?: string
+          default_departure_lat?: number | null
+          default_departure_lng?: number | null
+          default_departure_name?: string
+          destination_address?: string
+          destination_lat?: number | null
+          destination_lng?: number | null
+          destination_name?: string
+          id?: boolean
+          one_way_km?: number
+          updated_at?: string
+        }
+        Update: {
+          arrival_time?: string
+          default_departure_address?: string
+          default_departure_lat?: number | null
+          default_departure_lng?: number | null
+          default_departure_name?: string
+          destination_address?: string
+          destination_lat?: number | null
+          destination_lng?: number | null
+          destination_name?: string
+          id?: boolean
+          one_way_km?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      assignments: {
+        Row: {
+          alarm_at: string | null
+          arrival_at: string | null
+          candidates: number
+          created_at: string
+          created_by: string | null
+          day: string
+          departure_address: string
+          departure_at: string | null
+          departure_lat: number | null
+          departure_lng: number | null
+          departure_name: string
+          distance_km: number | null
+          driver_id: string
+          fuel_price: number | null
+          fuel_type: string | null
+          id: string
+          travel_minutes: number | null
+          trip_cost: number | null
+        }
+        Insert: {
+          alarm_at?: string | null
+          arrival_at?: string | null
+          candidates?: number
+          created_at?: string
+          created_by?: string | null
+          day: string
+          departure_address?: string
+          departure_at?: string | null
+          departure_lat?: number | null
+          departure_lng?: number | null
+          departure_name?: string
+          distance_km?: number | null
+          driver_id: string
+          fuel_price?: number | null
+          fuel_type?: string | null
+          id?: string
+          travel_minutes?: number | null
+          trip_cost?: number | null
+        }
+        Update: {
+          alarm_at?: string | null
+          arrival_at?: string | null
+          candidates?: number
+          created_at?: string
+          created_by?: string | null
+          day?: string
+          departure_address?: string
+          departure_at?: string | null
+          departure_lat?: number | null
+          departure_lng?: number | null
+          departure_name?: string
+          distance_km?: number | null
+          driver_id?: string
+          fuel_price?: number | null
+          fuel_type?: string | null
+          id?: string
+          travel_minutes?: number | null
+          trip_cost?: number | null
+        }
+        Relationships: []
+      }
+      availability: {
+        Row: {
+          created_at: string
+          day: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          day: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          day?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      fuel_prices: {
+        Row: {
+          fuel_type: string
+          id: string
+          price: number
+          province: string
+          sample_size: number
+          updated_at: string
+        }
+        Insert: {
+          fuel_type: string
+          id?: string
+          price: number
+          province: string
+          sample_size?: number
+          updated_at?: string
+        }
+        Update: {
+          fuel_type?: string
+          id?: string
+          price?: number
+          province?: string
+          sample_size?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          body: string
+          created_at: string
+          day: string | null
+          id: string
+          kind: string
+          read: boolean
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          day?: string | null
+          id?: string
+          kind?: string
+          read?: boolean
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          day?: string | null
+          id?: string
+          kind?: string
+          read?: boolean
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          active: boolean
+          alarm_lead_minutes: number
+          car_model: string
+          city: string
+          consumption_kml: number
+          created_at: string
+          email: string
+          fuel_type: string
+          full_name: string
+          id: string
+          prep_minutes: number
+          province: string
+          seats: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          alarm_lead_minutes?: number
+          car_model?: string
+          city?: string
+          consumption_kml?: number
+          created_at?: string
+          email?: string
+          fuel_type?: string
+          full_name?: string
+          id: string
+          prep_minutes?: number
+          province?: string
+          seats?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          alarm_lead_minutes?: number
+          car_model?: string
+          city?: string
+          consumption_kml?: number
+          created_at?: string
+          email?: string
+          fuel_type?: string
+          full_name?: string
+          id?: string
+          prep_minutes?: number
+          province?: string
+          seats?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      sos_requests: {
+        Row: {
+          created_at: string
+          day: string
+          handled_by: string | null
+          id: string
+          reason: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          day: string
+          handled_by?: string | null
+          id?: string
+          reason?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          day?: string
+          handled_by?: string | null
+          id?: string
+          reason?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +506,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const

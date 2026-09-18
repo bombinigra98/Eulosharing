@@ -10,33 +10,57 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiPublicHooksAlarmsRouteImport } from './routes/api/public/hooks/alarms'
+import { Route as ApiPublicHooksDailyDrawRouteImport } from './routes/api/public/hooks/daily-draw'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksAlarmsRoute = ApiPublicHooksAlarmsRouteImport.update({
+  id: '/api/public/hooks/alarms',
+  path: '/api/public/hooks/alarms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicHooksDailyDrawRoute = ApiPublicHooksDailyDrawRouteImport.update({
+  id: '/api/public/hooks/daily-draw',
+  path: '/api/public/hooks/daily-draw',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api/public/hooks/alarms': typeof ApiPublicHooksAlarmsRoute
+  '/api/public/hooks/daily-draw': typeof ApiPublicHooksDailyDrawRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/public/hooks/alarms': typeof ApiPublicHooksAlarmsRoute
+  '/api/public/hooks/daily-draw': typeof ApiPublicHooksDailyDrawRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api/public/hooks/alarms': typeof ApiPublicHooksAlarmsRoute
+  '/api/public/hooks/daily-draw': typeof ApiPublicHooksDailyDrawRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/api/public/hooks/alarms' | '/api/public/hooks/daily-draw'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/api/public/hooks/alarms' | '/api/public/hooks/daily-draw'
+  id:
+    | '__root__'
+    | '/'
+    | '/api/public/hooks/alarms'
+    | '/api/public/hooks/daily-draw'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiPublicHooksAlarmsRoute: typeof ApiPublicHooksAlarmsRoute
+  ApiPublicHooksDailyDrawRoute: typeof ApiPublicHooksDailyDrawRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +72,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/alarms': {
+      id: '/api/public/hooks/alarms'
+      path: '/api/public/hooks/alarms'
+      fullPath: '/api/public/hooks/alarms'
+      preLoaderRoute: typeof ApiPublicHooksAlarmsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/daily-draw': {
+      id: '/api/public/hooks/daily-draw'
+      path: '/api/public/hooks/daily-draw'
+      fullPath: '/api/public/hooks/daily-draw'
+      preLoaderRoute: typeof ApiPublicHooksDailyDrawRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiPublicHooksAlarmsRoute: ApiPublicHooksAlarmsRoute,
+  ApiPublicHooksDailyDrawRoute: ApiPublicHooksDailyDrawRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
