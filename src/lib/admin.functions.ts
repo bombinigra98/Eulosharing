@@ -157,7 +157,7 @@ export const adminUpdateUser = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { geocode } = await import("./maps.server");
 
-    const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
+    const patch: Record<string, string | boolean> = { updated_at: new Date().toISOString() };
     if (data.full_name !== undefined) patch["full_name"] = data.full_name;
     if (data.active !== undefined) patch["active"] = data.active;
     if (data.city !== undefined && data.city.length > 1) {
@@ -179,7 +179,9 @@ export const adminUpdateUser = createServerFn({ method: "POST" })
       patch["email"] = data.email;
     }
 
-    const { error } = await supabaseAdmin.from("profiles").update(patch).eq("id", data.userId);
+    const { error } = await supabaseAdmin.from("profiles")
+      .update(patch as never)
+      .eq("id", data.userId);
     if (error) return { ok: false as const, error: error.message };
 
     if (data.makeAdmin !== undefined) {

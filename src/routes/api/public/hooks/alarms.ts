@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { authenticateCronRequest } from "@/integrations/supabase/cron-auth";
+import { authorizeScheduler } from "@/lib/cron-guard";
 
 /**
  * Smart alarm dispatcher. Runs on a short schedule and pushes each colleague's
@@ -10,7 +10,7 @@ export const Route = createFileRoute("/api/public/hooks/alarms")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const denied = await authenticateCronRequest(request);
+        const denied = await authorizeScheduler(request);
         if (denied) return denied;
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");

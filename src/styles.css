@@ -62,26 +62,27 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
+  --radius: 0.875rem;
+  /* CommuteBuddy: deep forest green surfaces with a warm amber accent. */
+  --background: oklch(0.19 0.032 165);
+  --foreground: oklch(0.96 0.012 120);
+  --card: oklch(0.235 0.036 166);
+  --card-foreground: oklch(0.96 0.012 120);
+  --popover: oklch(0.235 0.036 166);
+  --popover-foreground: oklch(0.96 0.012 120);
+  --primary: oklch(0.93 0.02 120);
+  --primary-foreground: oklch(0.21 0.036 166);
+  --secondary: oklch(0.29 0.032 167);
+  --secondary-foreground: oklch(0.94 0.014 120);
+  --muted: oklch(0.29 0.032 167);
+  --muted-foreground: oklch(0.72 0.026 150);
+  --accent: oklch(0.79 0.148 78);
+  --accent-foreground: oklch(0.22 0.05 70);
+  --destructive: oklch(0.68 0.19 25);
+  --destructive-foreground: oklch(0.98 0.01 120);
+  --border: oklch(0.36 0.03 167);
+  --input: oklch(0.36 0.03 167);
+  --ring: oklch(0.79 0.148 78);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -141,4 +142,20 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
   }
+}
+
+@theme inline {
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@utility font-display {
+  font-family: var(--font-display);
 }
