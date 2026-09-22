@@ -7,13 +7,13 @@ export const Route = createFileRoute("/auth")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Accedi · CommuteBuddy" },
+      { title: "Accedi · Eulosharing" },
       {
         name: "description",
         content:
-          "Accedi a CommuteBuddy per gestire la disponibilità auto, l'estrazione del guidatore e la sveglia intelligente.",
+          "Accedi a Eulosharing per gestire la disponibilità auto, l'estrazione del guidatore e la sveglia intelligente.",
       },
-      { property: "og:title", content: "Accedi · CommuteBuddy" },
+      { property: "og:title", content: "Accedi · Eulosharing" },
       {
         property: "og:description",
         content: "Il carpooling tra colleghi: disponibilità, guidatore estratto a sorte e sveglia.",
@@ -86,7 +86,7 @@ function AuthPage() {
       <div className="mb-6 flex flex-col items-center text-center">
         <img src="/icon-192.png" alt="" width={64} height={64} className="rounded-2xl" />
         <h1 className="font-display mt-4 text-3xl font-semibold tracking-tight text-foreground">
-          CommuteBuddy
+          Eulosharing
         </h1>
         <p className="mt-2 max-w-xs text-sm text-muted-foreground">
           Il carpooling tra colleghi: chi guida lo decide un'estrazione equa, la sveglia la calcola

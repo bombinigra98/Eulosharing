@@ -18,13 +18,13 @@ import { Badge, Button, Card, CardTitle, Field, Select } from "@/components/ui-k
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
     meta: [
-      { title: "Area amministratore · CommuteBuddy" },
+      { title: "Area amministratore · Eulosharing" },
       {
         name: "description",
         content:
           "Gestione colleghi, estrazione del guidatore, punto di ritrovo, SOS e impostazioni del tragitto.",
       },
-      { property: "og:title", content: "Area amministratore · CommuteBuddy" },
+      { property: "og:title", content: "Area amministratore · Eulosharing" },
       {
         property: "og:description",
         content: "Gestisci utenti, SOS, estrazione guidatore e punto di partenza condiviso.",
@@ -155,17 +155,17 @@ function Admin() {
   return (
     <AppShell title="Area amministratore" isAdmin>
       {message ? (
-        <div className="rounded-2xl border border-accent/40 bg-accent/10 px-4 py-3 text-sm">
+        <div className="rounded-xl border border-primary/40 bg-primary/10 px-4 py-3 text-sm text-foreground">
           {message}
         </div>
       ) : null}
 
-      <Card>
+      <Card className="border-primary/40 bg-primary/5">
         <CardTitle hint={`${availableOn(day)} disponibili`}>Estrazione guidatore</CardTitle>
         <div className="space-y-3">
           <Field label="Giorno" type="date" value={day} onChange={(e) => setDay(e.target.value)} />
           {current ? (
-            <div className="rounded-2xl border border-border/60 bg-secondary/40 p-4 text-sm">
+            <div className="rounded-xl border border-primary/30 bg-primary/10 p-4 text-sm">
               <p className="text-foreground">
                 Guida <strong>{nameOf(current.driver_id)}</strong>
               </p>
@@ -204,7 +204,7 @@ function Admin() {
         </div>
       </Card>
 
-      <Card>
+      <Card className="border-primary/30">
         <CardTitle hint="ricalcola le sveglie">Punto di ritrovo del giorno</CardTitle>
         <div className="space-y-3">
           <Field
@@ -224,13 +224,19 @@ function Admin() {
         </div>
       </Card>
 
-      <Card>
+      <Card className={openSos.length ? "border-destructive/50" : "border-success/30"}>
         <CardTitle hint={openSos.length ? `${openSos.length} aperte` : "nessuna aperta"}>
           Richieste SOS
         </CardTitle>
         <ul className="divide-y divide-border/60">
           {data.sos.slice(0, 10).map((s) => (
-            <li key={s.id} className="flex items-center justify-between gap-3 py-2.5">
+            <li
+              key={s.id}
+              className={`flex items-center justify-between gap-3 rounded-lg border-l-4 px-3 py-2.5 ${
+                s.status === "aperta"
+                  ? "border-destructive bg-destructive/10"
+                  : "border-success bg-success/10"
+              }`}
               <div>
                 <p className="text-sm text-foreground">
                   {nameOf(s.user_id)} · {dayLabel(s.day)}
@@ -246,10 +252,10 @@ function Admin() {
                     refresh();
                   }}
                 >
-                  Segna gestita
+                  <span className="text-destructive">Segna gestita</span>
                 </Button>
               ) : (
-                <Badge>gestita</Badge>
+                <Badge tone="success">gestita</Badge>
               )}
             </li>
           ))}
@@ -259,7 +265,7 @@ function Admin() {
         </ul>
       </Card>
 
-      <Card>
+      <Card className="border-primary/30">
         <CardTitle hint={`${data.profiles.length} iscritti`}>Colleghi</CardTitle>
         <ul className="space-y-3">
           {data.profiles.map((p) => {
@@ -267,7 +273,7 @@ function Admin() {
               (a) => a.driver_id === p.id && a.day.startsWith(monthPrefix),
             ).length;
             return (
-              <li key={p.id} className="rounded-2xl border border-border/60 bg-secondary/30 p-4">
+              <li key={p.id} className="rounded-xl border border-border/70 bg-secondary/30 p-4 transition-colors hover:border-primary/40">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-sm font-medium text-foreground">
@@ -350,7 +356,7 @@ function Admin() {
         </ul>
       </Card>
 
-      <Card>
+      <Card className="border-primary/30 bg-primary/5">
         <CardTitle>Impostazioni tragitto</CardTitle>
         <div className="space-y-3">
           <Field

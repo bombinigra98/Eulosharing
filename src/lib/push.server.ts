@@ -22,7 +22,7 @@ export async function sendPush(
   content: PushContent,
 ): Promise<"sent" | "gone" | "failed"> {
   const vapid = {
-    subject: process.env["VAPID_SUBJECT"] ?? "mailto:admin@commutebuddy.app",
+    subject: process.env["VAPID_SUBJECT"] ?? "mailto:admin@eulosharing.app",
     publicKey: process.env["VAPID_PUBLIC_KEY"],
     privateKey: process.env["VAPID_PRIVATE_KEY"],
   };

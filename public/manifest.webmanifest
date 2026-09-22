@@ -1,12 +1,12 @@
 {
-  "name": "CommuteBuddy",
-  "short_name": "CommuteBuddy",
+  "name": "Eulosharing",
+  "short_name": "Eulosharing",
   "description": "Carpooling tra colleghi: disponibilità, estrazione equa del guidatore, costi carburante e sveglia intelligente.",
   "start_url": "/dashboard",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#0c1a17",
-  "theme_color": "#0c1a17",
+  "background_color": "#071a3a",
+  "theme_color": "#1769e8",
   "icons": [
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
