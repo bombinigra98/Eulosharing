@@ -9,13 +9,13 @@ import { Button, Card, CardTitle, Field, Select } from "@/components/ui-kit";
 export const Route = createFileRoute("/_authenticated/profilo")({
   head: () => ({
     meta: [
-      { title: "Il mio profilo · CommuteBuddy" },
+      { title: "Il mio profilo · Eulosharing" },
       {
         name: "description",
         content:
           "Aggiorna email, città di partenza, auto, consumo e i minuti di anticipo della sveglia.",
       },
-      { property: "og:title", content: "Il mio profilo · CommuteBuddy" },
+      { property: "og:title", content: "Il mio profilo · Eulosharing" },
       {
         property: "og:description",
         content: "Email, città, auto e preferenze della sveglia intelligente.",

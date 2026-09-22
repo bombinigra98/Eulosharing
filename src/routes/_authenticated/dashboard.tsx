@@ -17,13 +17,13 @@ import { Badge, Button, Card, CardTitle, Stat } from "@/components/ui-kit";
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: "I miei viaggi · CommuteBuddy" },
+      { title: "I miei viaggi · Eulosharing" },
       {
         name: "description",
         content:
           "Disponibilità auto, guidatore del giorno, costo del viaggio e sveglia intelligente.",
       },
-      { property: "og:title", content: "I miei viaggi · CommuteBuddy" },
+      { property: "og:title", content: "I miei viaggi · Eulosharing" },
       {
         property: "og:description",
         content: "Guidatore del giorno, costo del viaggio e sveglia calcolata sul traffico.",
@@ -146,7 +146,7 @@ function Dashboard() {
   return (
     <AppShell title={`Ciao ${data.profile?.full_name?.split(" ")[0] || "collega"}`} isAdmin={data.isAdmin}>
       {message ? (
-        <div className="rounded-2xl border border-accent/40 bg-accent/10 px-4 py-3 text-sm text-foreground">
+        <div className="rounded-xl border border-primary/40 bg-primary/10 px-4 py-3 text-sm text-foreground">
           {message}
         </div>
       ) : null}
@@ -156,7 +156,7 @@ function Dashboard() {
         {next ? (
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <span className="grid size-11 place-items-center rounded-2xl bg-accent/15 text-accent">
+              <span className="grid size-11 place-items-center rounded-xl bg-primary/15 text-primary">
                 <Car className="size-5" />
               </span>
               <div>
@@ -251,8 +251,8 @@ function Dashboard() {
                 onClick={() => availabilityMutation.mutate({ day, available: !active })}
                 className={`rounded-2xl border px-2 py-3 text-center transition-colors ${
                   active
-                    ? "border-accent bg-accent/15 text-foreground"
-                    : "border-border bg-secondary/40 text-muted-foreground hover:border-accent/40"
+                    ? "border-primary bg-primary/15 text-foreground shadow-sm shadow-primary/10"
+                    : "border-border bg-secondary/40 text-muted-foreground hover:border-primary/50"
                 }`}
               >
                 <span className="block text-sm font-medium">{dayLabel(day)}</span>
@@ -296,8 +296,12 @@ function Dashboard() {
           {data.notifications.slice(0, 6).map((n) => (
             <li
               key={n.id}
-              className={`rounded-2xl border px-4 py-3 ${
-                n.read ? "border-border/60 bg-secondary/30" : "border-accent/40 bg-accent/10"
+              className={`rounded-xl border-l-4 px-4 py-3 ${
+                n.kind === "sos"
+                  ? "border-destructive bg-destructive/10"
+                  : n.read
+                    ? "border-border bg-secondary/30"
+                    : "border-primary bg-primary/10"
               }`}
             >
               <p className="text-sm font-medium text-foreground">{n.title}</p>

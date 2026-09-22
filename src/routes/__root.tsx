@@ -80,17 +80,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         name: "viewport",
         content: "width=device-width, initial-scale=1, viewport-fit=cover",
       },
-      { title: "CommuteBuddy · Carpooling tra colleghi" },
+      { title: "Eulosharing · Carpooling tra colleghi" },
       {
         name: "description",
         content:
           "Carpooling tra colleghi: disponibilità, estrazione equa del guidatore, costo carburante e sveglia intelligente.",
       },
-      { name: "theme-color", content: "#0c1a17" },
+      { name: "theme-color", content: "#071a3a" },
       { name: "mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-title", content: "CommuteBuddy" },
-      { property: "og:title", content: "CommuteBuddy · Carpooling tra colleghi" },
+      { name: "apple-mobile-web-app-title", content: "Eulosharing" },
+      { property: "og:title", content: "Eulosharing · Carpooling tra colleghi" },
       {
         property: "og:description",
         content:
@@ -126,7 +126,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="it">
       <head>
         <HeadContent />
       </head>

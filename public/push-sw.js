@@ -1,4 +1,4 @@
-// Notification worker for CommuteBuddy wake-up alarms.
+// Notification worker for Eulosharing wake-up alarms.
 // It only handles web push; it never caches or serves app files.
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));
@@ -8,13 +8,13 @@ self.addEventListener("push", (event) => {
   try {
     payload = event.data ? event.data.json() : {};
   } catch {
-    payload = { title: "CommuteBuddy", body: event.data ? event.data.text() : "" };
+    payload = { title: "Eulosharing", body: event.data ? event.data.text() : "" };
   }
 
   event.waitUntil(
-    self.registration.showNotification(payload.title || "CommuteBuddy", {
+    self.registration.showNotification(payload.title || "Eulosharing", {
       body: payload.body || "",
-      tag: payload.tag || "commutebuddy",
+      tag: payload.tag || "eulosharing",
       renotify: true,
       requireInteraction: payload.tag === "sveglia",
       icon: "/icon-192.png",

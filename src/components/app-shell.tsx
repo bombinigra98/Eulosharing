@@ -32,20 +32,20 @@ export function AppShell({
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <header className="sticky top-0 z-20 border-b border-border/60 bg-background/85 backdrop-blur-xl">
+      <header className="sticky top-0 z-20 border-b border-primary/20 bg-background/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3.5">
           <div className="flex items-center gap-2.5">
             <img src="/icon-192.png" alt="" width={32} height={32} className="rounded-xl" />
             <div>
               <p className="font-display text-sm font-semibold leading-none text-foreground">
-                CommuteBuddy
+                Eulosharing
               </p>
               <p className="mt-1 text-xs leading-none text-muted-foreground">{title}</p>
             </div>
           </div>
           <button
             onClick={signOut}
-            className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-secondary/30 px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary/50 hover:bg-secondary hover:text-foreground"
           >
             <LogOut className="size-3.5" /> Esci
           </button>
@@ -54,7 +54,7 @@ export function AppShell({
 
       <main className="mx-auto max-w-3xl space-y-4 px-4 py-5">{children}</main>
 
-      <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-border/60 bg-background/90 backdrop-blur-xl">
+      <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-primary/20 bg-background/95 backdrop-blur-xl">
         <div className="mx-auto flex max-w-3xl">
           {tabs.map((tab) => (
             <Link

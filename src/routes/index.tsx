@@ -5,13 +5,13 @@ import { Button } from "@/components/ui-kit";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "CommuteBuddy · Carpooling tra colleghi" },
+      { title: "Eulosharing · Carpooling tra colleghi" },
       {
         name: "description",
         content:
           "Organizza i passaggi in auto con i colleghi: calendario disponibilità, estrazione equa del guidatore, costo carburante reale e sveglia intelligente basata sul traffico.",
       },
-      { property: "og:title", content: "CommuteBuddy · Carpooling tra colleghi" },
+      { property: "og:title", content: "Eulosharing · Carpooling tra colleghi" },
       {
         property: "og:description",
         content:
@@ -54,7 +54,7 @@ function Landing() {
         <header className="flex items-center gap-2.5">
           <img src="/icon-192.png" alt="" width={36} height={36} className="rounded-xl" />
           <span className="font-display text-base font-semibold text-foreground">
-            CommuteBuddy
+            Eulosharing
           </span>
         </header>
 
@@ -83,7 +83,7 @@ function Landing() {
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="rounded-3xl border border-border/60 bg-card p-5 transition-colors hover:border-accent/50"
+              className="rounded-2xl border border-border/70 bg-card p-5 transition-colors hover:border-primary/50 hover:bg-primary/5"
             >
               <feature.icon className="size-5 text-accent" />
               <h2 className="font-display mt-3 text-base font-semibold text-foreground">
