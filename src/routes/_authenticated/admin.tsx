@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
-import { Dices, MapPin, ShieldCheck, Trash2 } from "lucide-react";
+import { CalendarDays, ChevronDown, ChevronUp, Dices, MapPin, ShieldCheck, Trash2 } from "lucide-react";
 import {
   adminDeleteUser,
   adminGenerateDriver,
@@ -65,6 +65,7 @@ function Admin() {
   const resolveSos = useServerFn(adminResolveSos);
 
   const [message, setMessage] = useState("");
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [day, setDay] = useState("");
   const [departure, setDeparturePoint] = useState("");
   const [settings, setSettings] = useState({
@@ -270,14 +271,28 @@ function Admin() {
         <CardTitle hint={`${data.profiles.length} iscritti`}>Colleghi</CardTitle>
         <ul className="space-y-3">
           {data.profiles.map((p) => {
-            const drives = data.assignments.filter(
-              (a) => a.driver_id === p.id && a.day.startsWith(monthPrefix),
-            ).length;
+            const userAssignments = data.assignments.filter((a) => a.driver_id === p.id);
+            const drives = userAssignments.filter((a) => a.day.startsWith(monthPrefix)).length;
+            const userDays = data.availability
+              .filter((a) => a.user_id === p.id)
+              .map((a) => a.day)
+              .sort();
+            const userSos = data.sos.filter((s) => s.user_id === p.id);
+            const expanded = selectedUserId === p.id;
             return (
               <li key={p.id} className="rounded-xl border border-border/70 bg-secondary/30 p-4 transition-colors hover:border-primary/40">
                 <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-medium text-foreground">
+                  <button
+                    type="button"
+                    className="flex-1 text-left"
+                    onClick={() => setSelectedUserId(expanded ? null : p.id)}
+                  >
+                    <p className="flex items-center gap-1.5 text-sm font-medium text-foreground">
+                      {expanded ? (
+                        <ChevronUp className="size-4 text-primary" />
+                      ) : (
+                        <ChevronDown className="size-4 text-primary" />
+                      )}
                       {p.full_name || "(senza nome)"}{" "}
                       {adminIds.has(p.id) ? <Badge tone="primary">admin</Badge> : null}
                       {!p.active ? <Badge tone="danger">disattivato</Badge> : null}
@@ -287,7 +302,7 @@ function Admin() {
                       {p.city || "città n/d"} ({p.province || "—"}) · {p.car_model || "auto n/d"} ·{" "}
                       {p.fuel_type} · {drives} turni questo mese
                     </p>
-                  </div>
+                  </button>
                   <Button
                     size="sm"
                     variant="danger"
@@ -351,6 +366,66 @@ function Admin() {
                     {adminIds.has(p.id) ? "Rimuovi admin" : "Rendi admin"}
                   </Button>
                 </div>
+
+                {expanded ? (
+                  <div className="mt-3 space-y-3 rounded-lg border border-primary/30 bg-background/60 p-3">
+                    <div>
+                      <p className="flex items-center gap-1.5 text-xs font-medium text-foreground">
+                        <CalendarDays className="size-3.5 text-primary" /> Disponibilità offerte
+                        (prossimi giorni)
+                      </p>
+                      {userDays.length ? (
+                        <div className="mt-1.5 flex flex-wrap gap-1.5">
+                          {userDays.map((d) => (
+                            <Badge key={d} tone="accent">
+                              {dayLabel(d)}
+                            </Badge>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Nessuna disponibilità futura.
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <p className="text-xs font-medium text-foreground">SOS inviati</p>
+                      {userSos.length ? (
+                        <ul className="mt-1 space-y-1">
+                          {userSos.slice(0, 5).map((s) => (
+                            <li key={s.id} className="text-xs text-muted-foreground">
+                              {dayLabel(s.day)} · {s.reason || "nessun motivo"} ·{" "}
+                              <Badge tone={s.status === "aperta" ? "danger" : "success"}>
+                                {s.status}
+                              </Badge>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="mt-1 text-xs text-muted-foreground">Nessun SOS.</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <p className="text-xs font-medium text-foreground">Turni come guidatore</p>
+                      {userAssignments.length ? (
+                        <ul className="mt-1 space-y-1">
+                          {userAssignments.slice(0, 5).map((a) => (
+                            <li key={a.id} className="text-xs text-muted-foreground">
+                              {dayLabel(a.day)} · partenza {time(a.departure_at)} ·{" "}
+                              {a.trip_cost ? `${Number(a.trip_cost).toFixed(2)} €` : "costo n/d"}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Non ha ancora guidato.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ) : null}
               </li>
             );
           })}
