@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
-import { Dices, MapPin, ShieldCheck, Trash2 } from "lucide-react";
+import { CalendarDays, ChevronDown, ChevronUp, Dices, MapPin, ShieldCheck, Trash2 } from "lucide-react";
 import {
   adminDeleteUser,
   adminGenerateDriver,
@@ -65,6 +65,7 @@ function Admin() {
   const resolveSos = useServerFn(adminResolveSos);
 
   const [message, setMessage] = useState("");
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [day, setDay] = useState("");
   const [departure, setDeparturePoint] = useState("");
   const [settings, setSettings] = useState({
