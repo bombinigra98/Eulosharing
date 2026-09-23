@@ -209,8 +209,27 @@ export const adminDeleteUser = createServerFn({ method: "POST" })
       return { ok: false as const, error: "Non puoi eliminare il tuo account amministratore." };
     }
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // Rimuove tutti i dati collegati: senza questo il profilo resterebbe in elenco.
+    await supabaseAdmin.from("availability").delete().eq("user_id", data.userId);
+    await supabaseAdmin.from("push_subscriptions").delete().eq("user_id", data.userId);
+    await supabaseAdmin.from("notifications").delete().eq("user_id", data.userId);
+    await supabaseAdmin.from("alarm_sends").delete().eq("user_id", data.userId);
+    await supabaseAdmin.from("sos_requests").delete().eq("user_id", data.userId);
+    await supabaseAdmin.from("assignments").delete().eq("driver_id", data.userId);
+    await supabaseAdmin.from("user_roles").delete().eq("user_id", data.userId);
+
+    const { error: profileError } = await supabaseAdmin
+      .from("profiles")
+      .delete()
+      .eq("id", data.userId);
+    if (profileError) return { ok: false as const, error: profileError.message };
+
     const { error } = await supabaseAdmin.auth.admin.deleteUser(data.userId);
-    if (error) return { ok: false as const, error: error.message };
+    // Un profilo orfano (account di accesso già rimosso) non è un errore.
+    if (error && !/not found/i.test(error.message)) {
+      return { ok: false as const, error: error.message };
+    }
     return { ok: true as const };
   });
 
