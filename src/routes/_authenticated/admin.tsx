@@ -282,8 +282,17 @@ function Admin() {
             return (
               <li key={p.id} className="rounded-xl border border-border/70 bg-secondary/30 p-4 transition-colors hover:border-primary/40">
                 <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-medium text-foreground">
+                  <button
+                    type="button"
+                    className="flex-1 text-left"
+                    onClick={() => setSelectedUserId(expanded ? null : p.id)}
+                  >
+                    <p className="flex items-center gap-1.5 text-sm font-medium text-foreground">
+                      {expanded ? (
+                        <ChevronUp className="size-4 text-primary" />
+                      ) : (
+                        <ChevronDown className="size-4 text-primary" />
+                      )}
                       {p.full_name || "(senza nome)"}{" "}
                       {adminIds.has(p.id) ? <Badge tone="primary">admin</Badge> : null}
                       {!p.active ? <Badge tone="danger">disattivato</Badge> : null}
@@ -293,7 +302,7 @@ function Admin() {
                       {p.city || "città n/d"} ({p.province || "—"}) · {p.car_model || "auto n/d"} ·{" "}
                       {p.fuel_type} · {drives} turni questo mese
                     </p>
-                  </div>
+                  </button>
                   <Button
                     size="sm"
                     variant="danger"
