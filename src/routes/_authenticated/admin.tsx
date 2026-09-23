@@ -271,9 +271,14 @@ function Admin() {
         <CardTitle hint={`${data.profiles.length} iscritti`}>Colleghi</CardTitle>
         <ul className="space-y-3">
           {data.profiles.map((p) => {
-            const drives = data.assignments.filter(
-              (a) => a.driver_id === p.id && a.day.startsWith(monthPrefix),
-            ).length;
+            const userAssignments = data.assignments.filter((a) => a.driver_id === p.id);
+            const drives = userAssignments.filter((a) => a.day.startsWith(monthPrefix)).length;
+            const userDays = data.availability
+              .filter((a) => a.user_id === p.id)
+              .map((a) => a.day)
+              .sort();
+            const userSos = data.sos.filter((s) => s.user_id === p.id);
+            const expanded = selectedUserId === p.id;
             return (
               <li key={p.id} className="rounded-xl border border-border/70 bg-secondary/30 p-4 transition-colors hover:border-primary/40">
                 <div className="flex items-start justify-between gap-3">
