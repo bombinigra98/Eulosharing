@@ -366,6 +366,66 @@ function Admin() {
                     {adminIds.has(p.id) ? "Rimuovi admin" : "Rendi admin"}
                   </Button>
                 </div>
+
+                {expanded ? (
+                  <div className="mt-3 space-y-3 rounded-lg border border-primary/30 bg-background/60 p-3">
+                    <div>
+                      <p className="flex items-center gap-1.5 text-xs font-medium text-foreground">
+                        <CalendarDays className="size-3.5 text-primary" /> Disponibilità offerte
+                        (prossimi giorni)
+                      </p>
+                      {userDays.length ? (
+                        <div className="mt-1.5 flex flex-wrap gap-1.5">
+                          {userDays.map((d) => (
+                            <Badge key={d} tone="accent">
+                              {dayLabel(d)}
+                            </Badge>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Nessuna disponibilità futura.
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <p className="text-xs font-medium text-foreground">SOS inviati</p>
+                      {userSos.length ? (
+                        <ul className="mt-1 space-y-1">
+                          {userSos.slice(0, 5).map((s) => (
+                            <li key={s.id} className="text-xs text-muted-foreground">
+                              {dayLabel(s.day)} · {s.reason || "nessun motivo"} ·{" "}
+                              <Badge tone={s.status === "aperta" ? "danger" : "success"}>
+                                {s.status}
+                              </Badge>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="mt-1 text-xs text-muted-foreground">Nessun SOS.</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <p className="text-xs font-medium text-foreground">Turni come guidatore</p>
+                      {userAssignments.length ? (
+                        <ul className="mt-1 space-y-1">
+                          {userAssignments.slice(0, 5).map((a) => (
+                            <li key={a.id} className="text-xs text-muted-foreground">
+                              {dayLabel(a.day)} · partenza {time(a.departure_at)} ·{" "}
+                              {a.trip_cost ? `${Number(a.trip_cost).toFixed(2)} €` : "costo n/d"}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Non ha ancora guidato.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ) : null}
               </li>
             );
           })}
