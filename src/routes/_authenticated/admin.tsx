@@ -237,6 +237,7 @@ function Admin() {
                   ? "border-destructive bg-destructive/10"
                   : "border-success bg-success/10"
               }`}
+            >
               <div>
                 <p className="text-sm text-foreground">
                   {nameOf(s.user_id)} · {dayLabel(s.day)}
