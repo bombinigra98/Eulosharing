@@ -200,6 +200,26 @@ export const adminUpdateUser = createServerFn({ method: "POST" })
     return { ok: true as const };
   });
 
+export const adminSetPassword = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) =>
+    z
+      .object({
+        userId: z.string().uuid(),
+        password: z.string().min(8, "La password deve avere almeno 8 caratteri"),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as unknown as AuthedContext);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.auth.admin.updateUserById(data.userId, {
+      password: data.password,
+    });
+    if (error) return { ok: false as const, error: error.message };
+    return { ok: true as const };
+  });
+
 export const adminDeleteUser = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => z.object({ userId: z.string().uuid() }).parse(data))

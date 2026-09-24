@@ -334,6 +334,23 @@ function Admin() {
                     size="sm"
                     variant="ghost"
                     onClick={async () => {
+                      const password = window.prompt(
+                        `Nuova password per ${p.email} (minimo 8 caratteri)`,
+                      );
+                      if (!password) return;
+                      const result = await setPassword({ data: { userId: p.id, password } });
+                      setMessage(
+                        result.ok ? "Password aggiornata." : (result.error ?? "Errore"),
+                      );
+                    }}
+                  >
+                    <KeyRound className="size-3.5" />
+                    Cambia password
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={async () => {
                       const city = window.prompt("Città di partenza", p.city);
                       if (!city) return;
                       await updateUser({ data: { userId: p.id, city } });
