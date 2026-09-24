@@ -70,6 +70,7 @@ function Admin() {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [day, setDay] = useState("");
   const [departure, setDeparturePoint] = useState("");
+  const [departureTime, setDepartureTime] = useState("07:30");
   const [settings, setSettings] = useState({
     destination_name: "",
     destination_address: "",
@@ -113,11 +114,11 @@ function Admin() {
   });
 
   const departureMutation = useMutation({
-    mutationFn: (input: { day: string; address: string }) => setDeparture({ data: input }),
+    mutationFn: (input: { day: string; address: string; time: string }) => setDeparture({ data: input }),
     onSuccess: (result) => {
       setMessage(
         result.ok
-          ? `Punto di ritrovo aggiornato: nuova partenza ${time(result.departureAt)} e sveglie ricalcolate.`
+          ? `Partenza fissata alle ${time(result.departureAt)}: sveglie ricalcolate e colleghi avvisati.`
           : result.reason,
       );
       refresh();
@@ -208,21 +209,28 @@ function Admin() {
       </Card>
 
       <Card className="border-primary/30">
-        <CardTitle hint="ricalcola le sveglie">Punto di ritrovo del giorno</CardTitle>
+        <CardTitle hint="ricalcola le sveglie">Partenza del giorno</CardTitle>
         <div className="space-y-3">
+          <Field
+            label="Orario di partenza"
+            type="time"
+            value={departureTime}
+            onChange={(e) => setDepartureTime(e.target.value)}
+            hint="Vale per tutti: la sveglia di ognuno viene ricalcolata da questo orario."
+          />
           <Field
             label="Indirizzo o luogo"
             value={departure}
             onChange={(e) => setDeparturePoint(e.target.value)}
             placeholder="Es. Piazza Garibaldi, Tivoli"
-            hint="La partenza viene ricalcolata sul traffico da qui alla destinazione."
+            hint="Facoltativo: lascia com\u2019è per mantenere il ritrovo attuale."
           />
           <Button
             size="sm"
-            disabled={departureMutation.isPending || departure.length < 3}
-            onClick={() => departureMutation.mutate({ day, address: departure })}
+            disabled={departureMutation.isPending || !/^\d{2}:\d{2}$/.test(departureTime)}
+            onClick={() => departureMutation.mutate({ day, address: departure, time: departureTime })}
           >
-            <MapPin className="size-4" /> Imposta ritrovo e avvisa tutti
+            <MapPin className="size-4" /> Fissa partenza e avvisa tutti
           </Button>
         </div>
       </Card>

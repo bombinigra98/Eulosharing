@@ -111,6 +111,7 @@ export async function generateAssignment(
     createdBy?: string | null;
     departureAddress?: string | null;
     force?: boolean;
+    departureTime?: string | null;
   } = {},
 ): Promise<GenerateResult> {
   const { data: settings } = await supabaseAdmin
@@ -127,7 +128,8 @@ export async function generateAssignment(
     .select("id, driver_id")
     .eq("day", day)
     .maybeSingle();
-  if (existing && !options.force && !options.departureAddress) {
+  const manual = Boolean(options.departureAddress || options.departureTime);
+  if (existing && !options.force && !manual) {
     return { ok: false, reason: "Il guidatore di questa giornata è già stato estratto." };
   }
 
@@ -154,7 +156,7 @@ export async function generateAssignment(
 
   // Keep a departure point change on the same driver; otherwise draw a new one.
   let driver: Candidate | undefined;
-  if (existing && options.departureAddress && !options.force) {
+  if (existing && manual && !options.force) {
     driver = candidates.find((c) => c.id === existing.driver_id);
   }
   if (!driver) {
@@ -196,12 +198,21 @@ export async function generateAssignment(
   }
   if (options.departureAddress) departureName = departureName || departureAddress;
 
-  const arrivalAt = romeInstant(day, settings.arrival_time);
+  let arrivalAt = romeInstant(day, settings.arrival_time);
   const route = await departureForArrival(
     { lat: Number(lat), lng: Number(lng) },
     { lat: Number(settings.destination_lat), lng: Number(settings.destination_lng) },
     arrivalAt,
   );
+  // Orario di partenza deciso dall'admin: prevale su quello calcolato.
+  if (options.departureTime) {
+    route.departureAt = romeInstant(day, options.departureTime);
+    arrivalAt = new Date(route.departureAt.getTime() + route.minutes * 60_000);
+  }
+  if (existing) {
+    // Nuovo orario: le sveglie già inviate per quel giorno ripartono.
+    await supabaseAdmin.from("alarm_sends").delete().eq("day", day);
+  }
 
   const fuelType = isFuelType(driver.fuel_type) ? driver.fuel_type : "benzina";
   const province = driver.province || "RM";
