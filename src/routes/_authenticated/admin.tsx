@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
-import { CalendarDays, ChevronDown, ChevronUp, Dices, MapPin, ShieldCheck, Trash2 } from "lucide-react";
+import { CalendarDays, ChevronDown, ChevronUp, Dices, KeyRound, MapPin, ShieldCheck, Trash2 } from "lucide-react";
 import {
   adminDeleteUser,
   adminGenerateDriver,
@@ -10,6 +10,7 @@ import {
   adminSaveSettings,
   adminSetDeparture,
   adminUpdateUser,
+  adminSetPassword,
 } from "@/lib/admin.functions";
 import { getAdminData } from "@/lib/admin.functions";
 import { AppShell } from "@/components/app-shell";
@@ -61,6 +62,7 @@ function Admin() {
   const setDeparture = useServerFn(adminSetDeparture);
   const saveSettings = useServerFn(adminSaveSettings);
   const updateUser = useServerFn(adminUpdateUser);
+  const setPassword = useServerFn(adminSetPassword);
   const deleteUser = useServerFn(adminDeleteUser);
   const resolveSos = useServerFn(adminResolveSos);
 
