@@ -74,7 +74,8 @@ export const adminSetDeparture = createServerFn({ method: "POST" })
     z
       .object({
         day: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-        address: z.string().min(3).max(200),
+        address: z.string().max(200).default(""),
+        time: z.string().regex(/^\d{2}:\d{2}$/),
       })
       .parse(data),
   )
@@ -83,7 +84,8 @@ export const adminSetDeparture = createServerFn({ method: "POST" })
     const { generateAssignment } = await import("./engine.server");
     return generateAssignment(data.day, {
       createdBy: context.userId,
-      departureAddress: data.address,
+      departureAddress: data.address.trim().length > 2 ? data.address.trim() : null,
+      departureTime: data.time,
     });
   });
 
