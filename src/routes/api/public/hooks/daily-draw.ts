@@ -29,6 +29,36 @@ export const Route = createFileRoute("/api/public/hooks/daily-draw")({
         }
 
         const day = addDays(romeToday(), 1);
+
+        // A single volunteer is not a carpool: clear the day and tell everyone.
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { notifyEveryone, formatDay } = await import("@/lib/engine.server");
+        const { data: avail } = await supabaseAdmin
+          .from("availability")
+          .select("user_id")
+          .eq("day", day);
+
+        if ((avail ?? []).length === 1) {
+          const loneId = avail![0]!.user_id;
+          const { data: lone } = await supabaseAdmin
+            .from("profiles")
+            .select("full_name, email")
+            .eq("id", loneId)
+            .maybeSingle();
+
+          await supabaseAdmin.from("availability").delete().eq("day", day);
+          await supabaseAdmin.from("assignments").delete().eq("day", day);
+
+          await notifyEveryone({
+            title: `Nessun equipaggio per il ${formatDay(day)}`,
+            body: `Era disponibile solo ${lone?.full_name || lone?.email || "un collega"}: la disponibilità è stata rimossa e per domani non c'è nessun viaggio condiviso.`,
+            kind: "annullato",
+            day,
+          });
+
+          return Response.json({ day, result: { ok: false, reason: "solo-un-disponibile" } });
+        }
+
         const result = await generateAssignment(day, { createdBy: null });
         return Response.json({ day, result });
       },
