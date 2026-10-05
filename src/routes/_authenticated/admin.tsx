@@ -11,6 +11,7 @@ import {
   adminSetDeparture,
   adminUpdateUser,
   adminSetPassword,
+  adminDeleteAssignment,
 } from "@/lib/admin.functions";
 import { getAdminData } from "@/lib/admin.functions";
 import { AppShell } from "@/components/app-shell";
@@ -65,6 +66,7 @@ function Admin() {
   const setPassword = useServerFn(adminSetPassword);
   const deleteUser = useServerFn(adminDeleteUser);
   const resolveSos = useServerFn(adminResolveSos);
+  const deleteAssignment = useServerFn(adminDeleteAssignment);
 
   const [message, setMessage] = useState("");
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
