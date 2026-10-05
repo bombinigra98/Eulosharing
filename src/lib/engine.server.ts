@@ -1,5 +1,5 @@
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { departureForArrival, geocode, travelMinutes } from "./maps.server";
+import { geocode, travelMinutes } from "./maps.server";
 import { fetchProvinceFuelPrice, isFuelType, tripCost, type FuelType } from "./fuel.server";
 import { sendPush } from "./push.server";
 
@@ -198,27 +198,22 @@ export async function generateAssignment(
   }
   if (options.departureAddress) departureName = departureName || departureAddress;
 
-  let arrivalAt = romeInstant(day, settings.arrival_time);
-  const route = await departureForArrival(
+  // La partenza è fissata alle 07:30 del giorno di viaggio (o all'orario scelto
+  // dall'admin). Il tempo di viaggio è calcolato sul traffico previsto per
+  // quell'orario esatto, non su quello della sera prima.
+  const dep = romeInstant(day, options.departureTime ?? "07:30");
+  const live = await travelMinutes(
     { lat: Number(lat), lng: Number(lng) },
     { lat: Number(settings.destination_lat), lng: Number(settings.destination_lng) },
-    arrivalAt,
+    dep,
   );
-  // Orario di partenza deciso dall'admin: prevale su quello calcolato.
-  // Il tempo di viaggio viene ricalcolato sul traffico previsto per quell'orario
-  // esatto del giorno di viaggio (es. 07:30), non su quello della sera prima.
-  if (options.departureTime) {
-    const dep = romeInstant(day, options.departureTime);
-    const live = await travelMinutes(
-      { lat: Number(lat), lng: Number(lng) },
-      { lat: Number(settings.destination_lat), lng: Number(settings.destination_lng) },
-      dep,
-    );
-    route.departureAt = dep;
-    route.minutes = live.minutes;
-    route.km = live.km;
-    arrivalAt = new Date(dep.getTime() + live.minutes * 60_000);
-  }
+  const route = {
+    departureAt: dep,
+    minutes: live.minutes,
+    km: live.km,
+    trafficAware: live.trafficAware,
+  };
+  const arrivalAt = new Date(dep.getTime() + live.minutes * 60_000);
   if (existing) {
     // Nuovo orario: le sveglie già inviate per quel giorno ripartono.
     await supabaseAdmin.from("alarm_sends").delete().eq("day", day);
