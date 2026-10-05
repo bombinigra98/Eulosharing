@@ -128,7 +128,7 @@ function Dashboard() {
   );
   const days = nextDays(data.today, 15);
   const upcoming = data.assignments
-    .filter((a) => a.day >= data.today)
+    .filter((a) => a.day >= data.today && a.candidates !== 1)
     .sort((a, b) => a.day.localeCompare(b.day));
   const next = upcoming[0];
   const driverName = (id: string) =>

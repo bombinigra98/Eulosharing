@@ -153,6 +153,23 @@ export async function generateAssignment(
   if (candidates.length === 0) {
     return { ok: false, reason: "Nessun collega attivo tra i disponibili." };
   }
+  if (candidates.length === 1) {
+    // A single volunteer is not a carpool: clear the day and tell everyone.
+    const lone = candidates[0]!;
+    await supabaseAdmin.from("availability").delete().eq("day", day);
+    await supabaseAdmin.from("assignments").delete().eq("day", day);
+    await supabaseAdmin.from("alarm_sends").delete().eq("day", day);
+    await notifyEveryone({
+      title: `Nessun equipaggio per il ${formatDay(day)}`,
+      body: `Era disponibile solo ${lone.full_name || lone.email || "un collega"}: la disponibilità è stata rimossa e non c'è nessun viaggio condiviso.`,
+      kind: "annullato",
+      day,
+    });
+    return {
+      ok: false,
+      reason: "Era disponibile un solo collega: giornata annullata e tutti avvisati.",
+    };
+  }
 
   // Keep a departure point change on the same driver; otherwise draw a new one.
   let driver: Candidate | undefined;
