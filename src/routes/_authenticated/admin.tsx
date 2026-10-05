@@ -11,6 +11,7 @@ import {
   adminSetDeparture,
   adminUpdateUser,
   adminSetPassword,
+  adminDeleteAssignment,
 } from "@/lib/admin.functions";
 import { getAdminData } from "@/lib/admin.functions";
 import { AppShell } from "@/components/app-shell";
@@ -65,6 +66,7 @@ function Admin() {
   const setPassword = useServerFn(adminSetPassword);
   const deleteUser = useServerFn(adminDeleteUser);
   const resolveSos = useServerFn(adminResolveSos);
+  const deleteAssignment = useServerFn(adminDeleteAssignment);
 
   const [message, setMessage] = useState("");
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
@@ -233,6 +235,40 @@ function Admin() {
             <MapPin className="size-4" /> Fissa partenza e avvisa tutti
           </Button>
         </div>
+      </Card>
+
+      <Card className="border-primary/30">
+        <CardTitle hint={`${data.assignments.length} registrati`}>Turni fatti</CardTitle>
+        <ul className="divide-y divide-border/60">
+          {data.assignments.map((a) => (
+            <li key={a.id} className="flex items-center justify-between gap-3 py-2.5">
+              <div>
+                <p className="text-sm text-foreground">
+                  {dayLabel(a.day)} · {nameOf(a.driver_id)}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Partenza {time(a.departure_at)} da {a.departure_name || "—"}
+                  {a.trip_cost != null ? ` · ${Number(a.trip_cost).toFixed(2)} €` : ""}
+                </p>
+              </div>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={async () => {
+                  if (!window.confirm(`Eliminare il turno di ${nameOf(a.driver_id)} del ${dayLabel(a.day)}?`)) return;
+                  const result = await deleteAssignment({ data: { id: a.id } });
+                  setMessage(result.ok ? "Turno eliminato." : result.error);
+                  refresh();
+                }}
+              >
+                <Trash2 className="size-4 text-destructive" />
+              </Button>
+            </li>
+          ))}
+          {data.assignments.length === 0 ? (
+            <li className="py-2 text-sm text-muted-foreground">Nessun turno registrato.</li>
+          ) : null}
+        </ul>
       </Card>
 
       <Card className={openSos.length ? "border-destructive/50" : "border-success/30"}>

@@ -268,3 +268,24 @@ export const adminResolveSos = createServerFn({ method: "POST" })
     if (error) return { ok: false as const, error: error.message };
     return { ok: true as const };
   });
+
+export const adminDeleteAssignment = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as unknown as AuthedContext);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: assignment } = await supabaseAdmin
+      .from("assignments")
+      .select("id, day")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (!assignment) return { ok: false as const, error: "Turno non trovato." };
+
+    // Elimina il turno e le sveglie già programmate per quel giorno.
+    await supabaseAdmin.from("alarm_sends").delete().eq("day", assignment.day);
+    const { error } = await supabaseAdmin.from("assignments").delete().eq("id", data.id);
+    if (error) return { ok: false as const, error: error.message };
+    return { ok: true as const };
+  });
