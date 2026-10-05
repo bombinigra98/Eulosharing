@@ -1,5 +1,5 @@
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { departureForArrival, geocode } from "./maps.server";
+import { departureForArrival, geocode, travelMinutes } from "./maps.server";
 import { fetchProvinceFuelPrice, isFuelType, tripCost, type FuelType } from "./fuel.server";
 import { sendPush } from "./push.server";
 
@@ -205,9 +205,19 @@ export async function generateAssignment(
     arrivalAt,
   );
   // Orario di partenza deciso dall'admin: prevale su quello calcolato.
+  // Il tempo di viaggio viene ricalcolato sul traffico previsto per quell'orario
+  // esatto del giorno di viaggio (es. 07:30), non su quello della sera prima.
   if (options.departureTime) {
-    route.departureAt = romeInstant(day, options.departureTime);
-    arrivalAt = new Date(route.departureAt.getTime() + route.minutes * 60_000);
+    const dep = romeInstant(day, options.departureTime);
+    const live = await travelMinutes(
+      { lat: Number(lat), lng: Number(lng) },
+      { lat: Number(settings.destination_lat), lng: Number(settings.destination_lng) },
+      dep,
+    );
+    route.departureAt = dep;
+    route.minutes = live.minutes;
+    route.km = live.km;
+    arrivalAt = new Date(dep.getTime() + live.minutes * 60_000);
   }
   if (existing) {
     // Nuovo orario: le sveglie già inviate per quel giorno ripartono.
