@@ -12,6 +12,8 @@ export const Route = createFileRoute("/api/public/hooks/alarms")({
       POST: async ({ request }) => {
         const denied = await authorizeScheduler(request);
         if (denied) return denied;
+        // Alarm dispatcher disabled by the owner to keep Cloud usage low.
+        if (Date.now() > 0) return Response.json({ ok: true, disabled: true });
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { romeToday, addDays, formatTime } = await import("@/lib/engine.server");
