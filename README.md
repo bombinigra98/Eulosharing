@@ -1,18 +1,14 @@
-# SOS Manager Hub
-
-Vorrei aggiungere però una parte di admin dove posso gestire gli utenti, nella scheda profilo manca il campo email da poter modificare, vorrei gestire anche SOS non posso più offrire passaggi. Domanda ma la sveglia come la riceve l’utente?
+# Welcome to your Lovable project
 
 This project was built with [Lovable](https://lovable.dev).
 
-**Live app**: https://sos-relief-station.lovable.app
-
 ## Build with Lovable
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/78fc7a18-d57b-4697-8ad2-08b923c6a52e).
+Open your project in the [Lovable editor](https://lovable.dev) and keep building.
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
+- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
@@ -24,3 +20,10 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## Built with
+
+- TanStack Start
+- TypeScript
+- React
+- Tailwind CSS
