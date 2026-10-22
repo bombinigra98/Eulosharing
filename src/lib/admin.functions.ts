@@ -148,20 +148,21 @@ export const adminUpdateUser = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context as unknown as AuthedContext);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { geocode } = await import("./maps.server");
 
     const patch: Record<string, string | boolean> = { updated_at: new Date().toISOString() };
     if (data.full_name !== undefined) patch["full_name"] = data.full_name;
     if (data.active !== undefined) patch["active"] = data.active;
     if (data.city !== undefined && data.city.length > 1) {
-      patch["city"] = data.city;
-      try {
-        const geo = await geocode(data.city);
-        patch["city"] = geo.city || data.city;
-        patch["province"] = geo.province;
-      } catch (error) {
-        console.error("Geocodifica non riuscita", error);
-      }
+      const { data: current } = await supabaseAdmin
+        .from("profiles")
+        .select("city, province")
+        .eq("id", data.userId)
+        .maybeSingle();
+      const city = data.city.trim();
+      patch["city"] = city;
+      patch["province"] = current?.city.trim().toLowerCase() === city.toLowerCase()
+        ? current.province
+        : "";
     }
     if (data.email !== undefined) {
       const { error } = await supabaseAdmin.auth.admin.updateUserById(data.userId, {
