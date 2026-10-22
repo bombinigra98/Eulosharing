@@ -67,7 +67,7 @@ export const adminGenerateDriver = createServerFn({ method: "POST" })
     return generateAssignment(data.day, { createdBy: context.userId, force: data.force });
   });
 
-/** Admin sets the shared departure point; the alarm is recomputed from traffic. */
+/** Admin sets the shared departure point; alarm is based on manually configured time. */
 export const adminSetDeparture = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) =>
@@ -105,37 +105,28 @@ export const adminSaveSettings = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context as unknown as AuthedContext);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { geocode } = await import("./maps.server");
 
-    const dest = await geocode(data.destination_address);
-    let depName = "";
-    let depLat: number | null = null;
-    let depLng: number | null = null;
-    let depAddress = "";
-    if (data.default_departure_address.trim().length > 2) {
-      const dep = await geocode(data.default_departure_address);
-      depName = dep.city || dep.formatted;
-      depLat = dep.lat;
-      depLng = dep.lng;
-      depAddress = dep.formatted;
-    }
+    // Salva gli indirizzi senza geocodifica o calcolo automatico del percorso.
+    const destinationAddress = data.destination_address.trim();
+    const departureAddress = data.default_departure_address.trim();
 
     const { error } = await supabaseAdmin
       .from("app_settings")
       .update({
-        destination_name: data.destination_name,
-        destination_address: dest.formatted,
-        destination_lat: dest.lat,
-        destination_lng: dest.lng,
-        default_departure_name: depName,
-        default_departure_address: depAddress,
-        default_departure_lat: depLat,
-        default_departure_lng: depLng,
+        destination_name: data.destination_name.trim(),
+        destination_address: destinationAddress,
+        destination_lat: null,
+        destination_lng: null,
+        default_departure_name: departureAddress,
+        default_departure_address: departureAddress,
+        default_departure_lat: null,
+        default_departure_lng: null,
         arrival_time: data.arrival_time,
         one_way_km: data.one_way_km,
         updated_at: new Date().toISOString(),
       })
       .eq("id", true);
+
     if (error) return { ok: false as const, error: error.message };
     return { ok: true as const };
   });
@@ -232,7 +223,6 @@ export const adminDeleteUser = createServerFn({ method: "POST" })
     }
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    // Rimuove tutti i dati collegati: senza questo il profilo resterebbe in elenco.
     await supabaseAdmin.from("availability").delete().eq("user_id", data.userId);
     await supabaseAdmin.from("push_subscriptions").delete().eq("user_id", data.userId);
     await supabaseAdmin.from("notifications").delete().eq("user_id", data.userId);
@@ -248,7 +238,6 @@ export const adminDeleteUser = createServerFn({ method: "POST" })
     if (profileError) return { ok: false as const, error: profileError.message };
 
     const { error } = await supabaseAdmin.auth.admin.deleteUser(data.userId);
-    // Un profilo orfano (account di accesso già rimosso) non è un errore.
     if (error && !/not found/i.test(error.message)) {
       return { ok: false as const, error: error.message };
     }
@@ -283,7 +272,6 @@ export const adminDeleteAssignment = createServerFn({ method: "POST" })
       .maybeSingle();
     if (!assignment) return { ok: false as const, error: "Turno non trovato." };
 
-    // Elimina il turno e le sveglie già programmate per quel giorno.
     await supabaseAdmin.from("alarm_sends").delete().eq("day", assignment.day);
     const { error } = await supabaseAdmin.from("assignments").delete().eq("id", data.id);
     if (error) return { ok: false as const, error: error.message };
