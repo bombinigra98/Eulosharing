@@ -174,7 +174,7 @@ function Dashboard() {
               <Stat
                 label="Partenza"
                 value={time(next.departure_at)}
-                sub={`${next.travel_minutes ?? "?"} min con il traffico`}
+                sub="Orario impostato manualmente"
               />
               <Stat
                 label="La tua sveglia"
