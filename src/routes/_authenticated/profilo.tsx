@@ -117,7 +117,7 @@ function Profile() {
             label="Città di partenza"
             value={form.city}
             onChange={(e) => set("city", e.target.value)}
-            hint={`Provincia rilevata: ${data.profile?.province || "—"} · decide il prezzo del carburante.`}
+            hint={`Provincia registrata: ${data.profile?.province || "—"}. Il rilevamento automatico è disattivato.`}
           />
         </div>
       </Card>

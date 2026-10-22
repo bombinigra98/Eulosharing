@@ -9,13 +9,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Organizza i passaggi in auto con i colleghi: calendario disponibilità, estrazione equa del guidatore, costo carburante reale e sveglia intelligente basata sul traffico.",
+          "Organizza i passaggi in auto con i colleghi: calendario disponibilità, estrazione equa del guidatore, costo carburante e partenza decisa dall'amministratore.",
       },
       { property: "og:title", content: "Eulosharing · Carpooling tra colleghi" },
       {
         property: "og:description",
         content:
-          "Calendario disponibilità, guidatore estratto in modo equo, costo carburante per provincia e sveglia calcolata sul traffico.",
+          "Calendario disponibilità, guidatore estratto in modo equo, costo carburante e orari di partenza condivisi.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -42,8 +42,8 @@ const features = [
   },
   {
     icon: AlarmClock,
-    title: "Sveglia intelligente",
-    text: "L'app propone l'orario di partenza in base al traffico e suona i minuti prima che scegli tu.",
+    title: "Orari condivisi",
+    text: "L'amministratore decide la partenza; l'orario della sveglia tiene conto dei tuoi minuti di preparazione e anticipo.",
   },
 ];
 
@@ -67,7 +67,7 @@ function Landing() {
           </h1>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground">
             Segna quando puoi guidare, lascia che l'estrazione equa scelga il guidatore del giorno e
-            ricevi la sveglia calcolata sul traffico reale dal punto di ritrovo.
+            consulta l'orario di partenza deciso dall'amministratore e il punto di ritrovo.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link to="/auth">
@@ -95,8 +95,7 @@ function Landing() {
         </section>
 
         <footer className="mt-16 border-t border-border/60 pt-6 text-xs text-muted-foreground">
-          Prezzi carburante dall'Osservaprezzi del Ministero delle Imprese · tempi di percorrenza
-          Google Maps.
+          Prezzi carburante dall'Osservaprezzi del Ministero delle Imprese.
         </footer>
       </div>
     </div>

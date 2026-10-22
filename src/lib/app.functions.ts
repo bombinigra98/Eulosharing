@@ -68,24 +68,18 @@ export const saveProfile = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => profileSchema.parse(data))
   .handler(async ({ data, context }) => {
     const { userId, supabase } = context;
-    const { geocode } = await import("./maps.server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-    let province = "";
-    let city = data.city;
-    try {
-      const geo = await geocode(data.city);
-      province = geo.province;
-      city = geo.city || data.city;
-    } catch (error) {
-      console.error("Geocodifica città non riuscita", error);
-    }
 
     const { data: current } = await supabase
       .from("profiles")
-      .select("email")
+      .select("email, city, province")
       .eq("id", userId)
       .maybeSingle();
+
+    const city = data.city.trim();
+    const province = current?.city.trim().toLowerCase() === city.toLowerCase()
+      ? current.province
+      : "";
 
     if (current && current.email.toLowerCase() !== data.email.toLowerCase()) {
       const { error } = await supabaseAdmin.auth.admin.updateUserById(userId, {
