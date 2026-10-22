@@ -1,48 +1,32 @@
-const GATEWAY_URL = "https://connector-gateway.lovable.dev/google_maps";
+  url.searchParams.set("region", "it");
+  url.searchParams.set("key", key);
 
-function creds() {
-  const lovableKey = process.env["LOVABLE_API_KEY"];
-  const mapsKey = process.env["GOOGLE_MAPS_API_KEY"];
-  if (!lovableKey || !mapsKey) throw new Error("Google Maps non è collegato");
-  return { lovableKey, mapsKey };
-}
-
-export type GeoPoint = {
-  lat: number;
-  lng: number;
-  formatted: string;
-  city: string;
-  province: string;
-};
-
-/** Province short code (e.g. "RM") from an address or city name. */
-export async function geocode(address: string): Promise<GeoPoint> {
-  const { lovableKey, mapsKey } = creds();
-  const res = await fetch(
-    `${GATEWAY_URL}/maps/api/geocode/json?address=${encodeURIComponent(address)}&language=it&region=it`,
-    {
-      headers: {
-        Authorization: `Bearer ${lovableKey}`,
-        "X-Connection-Api-Key": mapsKey,
-      },
-    },
-  );
+  const res = await fetch(url);
   if (!res.ok) {
     const body = await res.text();
     throw new Error(`Geocodifica non riuscita [${res.status}]: ${body}`);
   }
+
   const json = (await res.json()) as {
     status: string;
+    error_message?: string;
     results?: Array<{
       formatted_address: string;
       geometry: { location: { lat: number; lng: number } };
       address_components: Array<{ short_name: string; long_name: string; types: string[] }>;
     }>;
   };
+
+  if (json.status !== "OK") {
+    throw new Error(`Geocodifica Google non riuscita: ${json.status}${json.error_message ? ` — ${json.error_message}` : ""}`);
+  }
+
   const first = json.results?.[0];
   if (!first) throw new Error(`Indirizzo non trovato: ${address}`);
+
   const comp = (type: string) =>
     first.address_components.find((c) => c.types.includes(type));
+
   return {
     lat: first.geometry.location.lat,
     lng: first.geometry.location.lng,
@@ -63,8 +47,9 @@ export async function travelMinutes(
   destination: LatLng,
   departureAt: Date,
 ): Promise<{ minutes: number; km: number; trafficAware: boolean }> {
-  const { lovableKey, mapsKey } = creds();
+  const key = mapsApiKey();
   const future = departureAt.getTime() > Date.now() + 60_000;
+
   const body: Record<string, unknown> = {
     origin: { location: { latLng: { latitude: origin.lat, longitude: origin.lng } } },
     destination: {
@@ -77,25 +62,27 @@ export async function travelMinutes(
   };
   if (future) body["departureTime"] = departureAt.toISOString();
 
-  const res = await fetch(`${GATEWAY_URL}/routes/directions/v2:computeRoutes`, {
+  const res = await fetch(GOOGLE_ROUTES_URL, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${lovableKey}`,
-      "X-Connection-Api-Key": mapsKey,
+      "X-Goog-Api-Key": key,
       "Content-Type": "application/json",
       "X-Goog-FieldMask": "routes.duration,routes.distanceMeters",
     },
     body: JSON.stringify(body),
   });
+
   if (!res.ok) {
     const text = await res.text();
     throw new Error(`Calcolo percorso non riuscito [${res.status}]: ${text}`);
   }
+
   const json = (await res.json()) as {
     routes?: Array<{ duration: string; distanceMeters: number }>;
   };
   const route = json.routes?.[0];
   if (!route) throw new Error("Nessun percorso trovato tra partenza e destinazione");
+
   const seconds = Number(route.duration.replace("s", ""));
   return {
     minutes: Math.ceil(seconds / 60),
