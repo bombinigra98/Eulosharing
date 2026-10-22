@@ -26,7 +26,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
       { property: "og:title", content: "I miei viaggi · Eulosharing" },
       {
         property: "og:description",
-        content: "Guidatore del giorno, costo del viaggio e sveglia calcolata sul traffico.",
+        content: "Guidatore del giorno, costo del viaggio e partenza decisa dall'amministratore.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
