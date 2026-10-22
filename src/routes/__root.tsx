@@ -95,7 +95,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         property: "og:description",
         content:
-          "Disponibilità auto, guidatore estratto in modo equo, costi carburante e sveglia sul traffico.",
+          "Disponibilità auto, guidatore estratto in modo equo, costi carburante e orari di partenza condivisi.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

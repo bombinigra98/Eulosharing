@@ -62,7 +62,7 @@ export const Route = createFileRoute("/api/public/hooks/alarms")({
               .eq("user_id", profile.id);
 
             const title = `Sveglia! Partenza ${formatTime(departure)}`;
-            const body = `Guida ${driver?.full_name || driver?.email}. Ritrovo a ${assignment.departure_name}. ${assignment.travel_minutes} min di viaggio con il traffico previsto.`;
+            const body = `Guida ${driver?.full_name || driver?.email}. Ritrovo a ${assignment.departure_name}. Partenza fissata dall'amministratore.`;
 
             for (const sub of subs ?? []) {
               const result = await sendPush(sub, { title, body, url: "/dashboard", tag: "sveglia" });
