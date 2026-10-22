@@ -1,5 +1,4 @@
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { geocode, travelMinutes } from "./maps.server";
 import { fetchProvinceFuelPrice, isFuelType, tripCost, type FuelType } from "./fuel.server";
 import { sendPush } from "./push.server";
 
@@ -119,8 +118,8 @@ export async function generateAssignment(
     .select("*")
     .eq("id", true)
     .single();
-  if (!settings?.destination_lat || !settings?.destination_lng) {
-    return { ok: false, reason: "Imposta prima la destinazione nell'area amministratore." };
+  if (!settings?.destination_address?.trim()) {
+    return { ok: false, reason: "Imposta prima l'indirizzo della destinazione nell'area amministratore." };
   }
 
   const { data: existing } = await supabaseAdmin
@@ -190,47 +189,35 @@ export async function generateAssignment(
     driver = weightedPick(candidates, drives).winner;
   }
 
-  // Departure point: admin override > previous value > global default > driver's city.
+  // Punto di partenza: override admin > valore precedente > default > città del guidatore.
+  // Gli indirizzi sono testo libero: nessuna chiamata a servizi cartografici.
   const { data: prev } = await supabaseAdmin
     .from("assignments")
     .select("departure_address, departure_name, departure_lat, departure_lng")
     .eq("day", day)
     .maybeSingle();
 
-  let departureName = prev?.departure_name ?? settings.default_departure_name ?? "";
-  let departureAddress =
+  const departureAddress = (
     options.departureAddress ??
     prev?.departure_address ??
     settings.default_departure_address ??
-    driver.city;
-  let lat = options.departureAddress ? null : (prev?.departure_lat ?? settings.default_departure_lat);
-  let lng = options.departureAddress ? null : (prev?.departure_lng ?? settings.default_departure_lng);
+    driver.city ??
+    ""
+  ).trim();
+  const departureName =
+    (options.departureAddress ? departureAddress : "") ||
+    prev?.departure_name ||
+    settings.default_departure_name ||
+    departureAddress;
 
-  if (lat == null || lng == null) {
-    const geo = await geocode(departureAddress);
-    lat = geo.lat;
-    lng = geo.lng;
-    departureAddress = geo.formatted;
-    if (!departureName) departureName = geo.city || departureAddress;
-  }
-  if (options.departureAddress) departureName = departureName || departureAddress;
-
-  // La partenza è fissata alle 07:30 del giorno di viaggio (o all'orario scelto
-  // dall'admin). Il tempo di viaggio è calcolato sul traffico previsto per
-  // quell'orario esatto, non su quello della sera prima.
   const dep = romeInstant(day, options.departureTime ?? "07:30");
-  const live = await travelMinutes(
-    { lat: Number(lat), lng: Number(lng) },
-    { lat: Number(settings.destination_lat), lng: Number(settings.destination_lng) },
-    dep,
-  );
-  const route = {
-    departureAt: dep,
-    minutes: live.minutes,
-    km: live.km,
-    trafficAware: live.trafficAware,
-  };
-  const arrivalAt = new Date(dep.getTime() + live.minutes * 60_000);
+  const arrivalAt = romeInstant(day, String(settings.arrival_time ?? "09:00").slice(0, 5));
+  if (arrivalAt.getTime() <= dep.getTime()) {
+    return {
+      ok: false,
+      reason: "L'orario di arrivo deve essere successivo all'orario di partenza. Modifica gli orari nelle impostazioni o nella partenza del giorno.",
+    };
+  }
   if (existing) {
     // Nuovo orario: le sveglie già inviate per quel giorno ripartono.
     await supabaseAdmin.from("alarm_sends").delete().eq("day", day);
@@ -243,7 +230,7 @@ export async function generateAssignment(
   const cost = fuel ? tripCost(totalKm, Number(driver.consumption_kml), fuel.price) : 0;
 
   const alarmAt = new Date(
-    route.departureAt.getTime() -
+    dep.getTime() -
       (driver.prep_minutes + driver.alarm_lead_minutes) * 60_000,
   );
 
@@ -253,10 +240,10 @@ export async function generateAssignment(
       driver_id: driver.id,
       departure_name: departureName,
       departure_address: departureAddress,
-      departure_lat: lat,
-      departure_lng: lng,
-      travel_minutes: route.minutes,
-      departure_at: route.departureAt.toISOString(),
+      departure_lat: null,
+      departure_lng: null,
+      travel_minutes: null,
+      departure_at: dep.toISOString(),
       arrival_at: arrivalAt.toISOString(),
       alarm_at: alarmAt.toISOString(),
       distance_km: totalKm,
@@ -271,7 +258,7 @@ export async function generateAssignment(
 
   await notifyEveryone({
     title: `Guidatore del ${formatDay(day)}: ${driver.full_name || driver.email}`,
-    body: `Partenza ${formatTime(route.departureAt)} da ${departureName} · ${route.minutes} min di viaggio · costo stimato ${cost.toFixed(2)} €`,
+    body: `Partenza ${formatTime(dep)} da ${departureName} · arrivo previsto ${formatTime(arrivalAt)} · costo stimato ${cost.toFixed(2)} €`,
     kind: "estrazione",
     day,
   });
@@ -280,7 +267,7 @@ export async function generateAssignment(
     ok: true,
     day,
     driverName: driver.full_name || driver.email,
-    departureAt: route.departureAt.toISOString(),
+    departureAt: dep.toISOString(),
     cost,
   };
 }
