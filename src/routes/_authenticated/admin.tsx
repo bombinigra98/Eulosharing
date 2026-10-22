@@ -204,7 +204,7 @@ function Admin() {
                 onClick={() => drawMutation.mutate({ day, force: true })}
               >
                 Rifai estrazione
-              </Button>
+                              </Button>
             ) : null}
           </div>
         </div>
@@ -225,7 +225,7 @@ function Admin() {
             value={departure}
             onChange={(e) => setDeparturePoint(e.target.value)}
             placeholder="Es. Piazza Garibaldi, Tivoli"
-            hint="Facoltativo: lascia com\u2019è per mantenere il ritrovo attuale."
+            hint="Facoltativo: lascia com’è per mantenere il ritrovo attuale."
           />
           <Button
             size="sm"
@@ -375,7 +375,7 @@ function Admin() {
                     }}
                   >
                     Cambia email
-                  </Button>
+                                      </Button>
                   <Button
                     size="sm"
                     variant="ghost"
@@ -531,9 +531,17 @@ function Admin() {
           <Button
             size="sm"
             onClick={async () => {
-              const result = await saveSettings({ data: settings });
-              setMessage(result.ok ? "Impostazioni salvate." : result.error);
-              refresh();
+              try {
+                const result = await saveSettings({ data: settings });
+                setMessage(result.ok ? "Impostazioni salvate." : result.error);
+                if (result.ok) refresh();
+              } catch (error) {
+                setMessage(
+                  error instanceof Error
+                    ? `Salvataggio non riuscito: ${error.message}`
+                    : "Salvataggio non riuscito. Riprova.",
+                );
+              }
             }}
           >
             Salva impostazioni
